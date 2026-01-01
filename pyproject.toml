@@ -8,6 +8,7 @@ dependencies = [
     "databases>=0.9.0",
     "dotenv>=0.9.9",
     "fastapi>=0.116.1",
+    "greenlet>=3.3.0",
     "pydantic>=2.11.8",
     "sqlalchemy>=2.0.45",
     "uvicorn>=0.35.0",

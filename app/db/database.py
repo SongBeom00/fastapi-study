@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Connection
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncConnection
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.pool import QueuePool, NullPool
@@ -39,7 +39,8 @@ async def direct_get_conn():
         print(e)
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail='요청하신 서비스가 잠시 내부적으로 문제가 발생했습니다.')
-async def context_get_conn():
+
+async def context_get_conn() -> AsyncConnection:
     conn = None
     try:
         conn = await engine.connect()

@@ -1,42 +1,13 @@
 from fastapi import FastAPI, Query
 from enum import Enum
 from pydantic import BaseModel
+from app.routes import post
 from typing import Annotated
 import logging
 app = FastAPI()
 
-
-
-# @app.get("/items/")
-# async def read_item(skip: int = 0, limit: int =10):
-#     return fake_item_db[skip: skip + limit]
-
-# @app.get("/items/")
-# async def read_items(q: Annotated[str, Query(min_length=3)] = "fixedquery"):
-#     # Query를 사용하여 쿼리 매개변수에 대한 추가 검증을 수행할 수 있다.
-#     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
-#     if q:
-#         results.update({"q": q})
-#     return results
-
-# 리스트를 받도록 설정
-# @app.get("/items/")
-# async def read_items(q: Annotated[list[str] | None, Query()] = "None"):
-#     # Query를 사용하여 쿼리 매개변수에 대한 추가 검증을 수행할 수 있다.
-#     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
-#     if q:
-#         results.update({"q": q})
-#     return results
-
-# 기본값 ["foo", "bar"]를 가지도록 설정
-# @app.get("/items/")
-# async def read_items(q: Annotated[list[str] | None, Query()] = ["foo", "bar"]):
-#     return {"q": q}
-
-# 빈 리스트를 기본값으로 설정
-# @app.get("/items/")
-# async def read_items(q: Annotated[list[str] | None, Query()] = []):
-#     return {"q": q}
+# 라우터 등록
+app.include_router(post.router)
 
 @app.get("/items/")
 async def read_items(q: Annotated[str | None, Query(title="Query string", min_length=3)] = None):
