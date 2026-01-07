@@ -1,3 +1,4 @@
+from pydantic import with_config
 from sqlalchemy import create_engine, Connection
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncConnection
 
@@ -43,8 +44,8 @@ async def direct_get_conn():
 async def context_get_conn() -> AsyncConnection:
     conn = None
     try:
-        conn = await engine.connect()
-        yield conn
+        async with engine.connect() as conn:
+            yield conn
     except SQLAlchemyError as e:
         print(e)
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

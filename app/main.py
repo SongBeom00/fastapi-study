@@ -1,13 +1,14 @@
+import uvicorn
 from fastapi import FastAPI, Query
 from enum import Enum
 from pydantic import BaseModel
-from app.routes import post
+from app.routes import board
 from typing import Annotated
 import logging
 app = FastAPI()
 
 # 라우터 등록
-app.include_router(post.router)
+app.include_router(board.router)
 
 @app.get("/items/")
 async def read_items(q: Annotated[str | None, Query(title="Query string", min_length=3)] = None):
@@ -51,5 +52,8 @@ async def say_hello(name: str):
 @app.get("/files/{file_path:path}")
 async def read_file(file_path: str):
     return {"file_path" : file_path}
+
+if __name__ == "__main__":
+    uvicorn.run("app.main:app", host='0.0.0.0', reload=True)
 
 
