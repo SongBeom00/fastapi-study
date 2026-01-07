@@ -8,7 +8,7 @@ from typing import List
 from app.schemas.board_schema import BoardData, BoardCreate, BoardUpdate, BoardDelete
 
 
-async def get_all_boards(conn: AsyncConnection) -> List:
+async def get_all_boards(conn: AsyncConnection) -> List[BoardData]:
     try:
         query = text("""
         SELECT id, title, content, created_at, updated_at, created_by, updated_by, is_deleted FROM board where is_deleted = FALSE;
