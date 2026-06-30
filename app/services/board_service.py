@@ -107,7 +107,9 @@ async def update_board(
             query = text("""
                 UPDATE board
                 SET title = :title,
-                    content = :content
+                    content = :content,
+                    updated_by = :updated_by,
+                    updated_at = NOW()
                 WHERE id = :id
                 AND is_deleted = FALSE
                 RETURNING

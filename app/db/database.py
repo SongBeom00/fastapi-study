@@ -1,10 +1,7 @@
-from pydantic import with_config
-from sqlalchemy import create_engine, Connection
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncConnection
+from typing import AsyncGenerator
 
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncConnection
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.pool import QueuePool, NullPool
-from contextlib import contextmanager
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from dotenv import load_dotenv
@@ -27,7 +24,7 @@ async def direct_get_conn():
     """
     즉시 커넥션 반환
     DB 커넥션 하나를 그대로 반환
-    호출한 쪽에사 반드시 await conn.close()를 호출해야 합니다.
+    호출한 쪽에서 반드시 await conn.close()를 호출해야 합니다.
 
     :return: conn
     """
@@ -41,8 +38,11 @@ async def direct_get_conn():
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail='요청하신 서비스가 잠시 내부적으로 문제가 발생했습니다.')
 
-async def context_get_conn() -> AsyncConnection:
-    conn = None
+async def context_get_conn() -> AsyncGenerator[AsyncConnection, None]:
+    """
+    FastAPI 의존성용 커넥션 제너레이터.
+    `async with`가 커넥션 반납을 보장하므로 별도 close가 필요 없다.
+    """
     try:
         async with engine.connect() as conn:
             yield conn
@@ -50,6 +50,3 @@ async def context_get_conn() -> AsyncConnection:
         print(e)
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail='요청하신 서비스가 잠시 내부적으로 문제가 발생했습니다.')
-    finally:
-        if conn:
-            await conn.close()
